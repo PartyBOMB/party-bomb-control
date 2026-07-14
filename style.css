@@ -5,3 +5,34 @@
 .team-card.team-yellow{background:rgba(133,77,14,.55)}
 .team-card.team-green{background:rgba(20,83,45,.55)}
 .team-card.team-neutral{background:rgba(63,63,70,.55)}
+
+/* v15.2.2 layout fixes */
+.settings-grid{
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  align-items:stretch;
+}
+.settings-grid label{
+  min-width:0;
+}
+.settings-grid input,
+.settings-grid select{
+  width:100%;
+  min-width:0;
+}
+.connection-actions{margin-bottom:10px}
+.topbar .actions{align-items:center}
+button:disabled{opacity:.45;cursor:not-allowed}
+.word-table-wrap{overflow:auto;max-height:65vh;border-radius:14px}
+.word-table{width:100%;border-collapse:collapse;background:#1b0505b8}
+.word-table th,.word-table td{padding:10px 12px;border-bottom:1px solid #ffffff1f;text-align:left;vertical-align:top}
+.word-table th{position:sticky;top:0;background:#2b0909;z-index:1}
+.word-table td:first-child{width:64px;color:#ffdca0;font-weight:700}
+.word-table td:nth-child(2){width:220px;font-weight:700}
+.taboo-list{display:flex;flex-wrap:wrap;gap:6px}
+.taboo-list span{padding:5px 8px;border-radius:999px;background:#5b1010}
+@media(max-width:900px){
+  .settings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px){
+  .settings-grid{grid-template-columns:1fr}
+}
