@@ -29,9 +29,13 @@ toggleDemo(){
   }
 },
 ensurePlayable(fn){
-  if(this.state.teams.length===0)return this.toast("Előbb hozz létre legalább egy csapatot.");
+  if(!this.state.settings.activity){
+    fn();
+    return;
+  }
+  if(this.state.teams.length===0)return this.toast("Activity ON módban előbb hozz létre legalább egy csapatot.");
   const team=this.team();
-  if(!team || team.players.length<2)return this.toast("A kezdő csapatban legalább 2 játékos kell.");
+  if(!team || team.players.length<2)return this.toast("Activity ON módban a kezdő csapatban legalább 2 játékos kell.");
   fn();
 },team(){return this.state.teams.find(t=>t.id===this.state.currentTeam)||null},
 teamMeta(id){
@@ -77,12 +81,34 @@ voltageToPercent(v){
   this.save();
   this.render();
 },
+addPlayer(teamId){
+  const team=this.state.teams.find(item=>item.id===teamId);
+  if(!team)return this.toast("A csapat nem található.");
+  if(team.players.length>=CONFIG.maxPlayers)return this.toast("Maximum 4 játékos lehet egy csapatban.");
+  team.players.push({
+    id:crypto.randomUUID(),
+    name:`${String.fromCharCode(65+team.players.length)} játékos`,
+    cuts:0,
+    booms:0
+  });
+  this.save();
+  this.render();
+},
 removePlayer(tid,pid){const t=this.state.teams.find(x=>x.id===tid);if(!t)return;t.players=t.players.filter(p=>p.id!==pid);this.state.game.giver=0;this.save();this.render()},log(t){this.state.logs.unshift(`${new Date().toLocaleTimeString("hu-HU")} ${t}`);this.state.logs=this.state.logs.slice(0,200)},fx(r){$("fx").textContent=r==="WIN"?"🎉 DEFUSED":"💥 BOOM!";$("fx").className=`fx ${r==="WIN"?"win":"boom"}`;r==="WIN"?Sound.win():Sound.boom();setTimeout(()=>$("fx").className="fx",1400)},render(){this.word=WORDS[this.state.game.word]||WORDS[0];this.settingsUI();this.teams();this.live();this.ranking();this.renderBattery();this.words();$("logOutput").textContent=this.state.logs.join("\n")},settingsUI(){const s=this.state.settings;$("setTime").value=s.time;$("setLife").value=s.life;$("setCuts").value=s.cuts;$("setLedSpeed").value=s.ledSpeed;$("setActivity").value=s.activity?1:0;$("setBrightness").value=s.brightness},teams(){$("addTeam").disabled=this.state.teams.length>=4;$("teamEditor").innerHTML=this.state.teams.length?this.state.teams.map(t=>{const m=this.teamMeta(t.id);return `<div class="team-card ${m.className}"><div class="team-head"><div class="team-title">${m.emoji} ${m.name}</div><button data-start="${t.id}" class="${this.state.currentTeam===t.id?"primary":""}">🏁 Kezdő</button><button data-delteam="${t.id}">🗑️</button></div>${t.players.map((p,i)=>`<div class="player-row"><span class="role">${String.fromCharCode(65+i)}</span><input value="${UI.esc(p.name)}" data-player="${t.id}|${p.id}"><button data-delplayer="${t.id}|${p.id}">🗑️</button></div>`).join("")}<button data-add="${t.id}" ${t.players.length>=4?"disabled":""}>➕ Játékos</button></div>`}).join(""):"<p>Még nincs csapat. Nyomd meg a ➕ Csapat gombot.</p>";document.querySelectorAll("[data-start]").forEach(x=>x.onclick=()=>{this.state.currentTeam=x.dataset.start;this.state.game.giver=0;this.activity();this.save();this.render()});document.querySelectorAll("[data-delteam]").forEach(x=>x.onclick=()=>{this.state.teams=this.state.teams.filter(t=>t.id!==x.dataset.delteam);if(this.state.currentTeam===x.dataset.delteam)this.state.currentTeam=this.state.teams[0]?.id||null;this.save();this.render()});document.querySelectorAll("[data-player]").forEach(x=>x.onchange=()=>{const[t,p]=x.dataset.player.split("|");this.state.teams.find(a=>a.id===t).players.find(a=>a.id===p).name=x.value;this.save();this.render()});document.querySelectorAll("[data-delplayer]").forEach(x=>x.onclick=()=>{const[t,p]=x.dataset.delplayer.split("|");this.removePlayer(t,p)});document.querySelectorAll("[data-add]").forEach(x=>x.onclick=()=>this.addPlayer(x.dataset.add))},live(){
   const g=this.state.game;
   const team=this.team();
   $("timer").textContent=UI.fmt(g.time);
   $("gameStatus").textContent=g.status==="GAME"?"▶️ Játék":g.status==="WIN"?"✅ Hatástalanítva":g.status==="BOOM"?"💥 Felrobbant":"⏸️ Készenlét";
-  if(!team){
+  const activityOn=this.state.settings.activity;
+  $("rolePanel").classList.toggle("hidden",!activityOn);
+  $("activityPanel").classList.toggle("hidden",!activityOn);
+
+  if(!activityOn){
+    $("liveTeam").textContent="💣 Normál bomba";
+    $("giverName").textContent="—";
+    $("guesserName").textContent="—";
+    $("taskType").textContent="—";
+  }else if(!team){
     $("liveTeam").textContent="🏁 Nincs csapat";
     $("giverName").textContent="—";
     $("guesserName").textContent="—";
@@ -95,8 +121,8 @@ removePlayer(tid,pid){const t=this.state.teams.find(x=>x.id===tid);if(!t)return;
     $("taskType").textContent=taskText;
   }
   $("currentWord").textContent=this.word?.word?.toUpperCase?.()||"—";
-  $("activityPanel").classList.toggle("hidden",!this.state.settings.activity);
-  $("tabooBox").classList.toggle("hidden",!this.state.settings.activity||g.task!=="DESC");
+  
+  $("tabooBox").classList.toggle("hidden",!activityOn||g.task!=="DESC");
   $("tabooWords").innerHTML=(this.word?.taboo||[]).map(w=>`<span>${UI.esc(w)}</span>`).join("");
   $("goodCuts").textContent=g.good;$("badCuts").textContent=g.bad;$("lifeCount").textContent=g.life;
   $("leds").innerHTML=CONFIG.colors.map((c,i)=>`<span class="led ${c} ${g.led===i?"active":""}"></span>`).join("");
@@ -110,6 +136,6 @@ removePlayer(tid,pid){const t=this.state.teams.find(x=>x.id===tid);if(!t)return;
   $("batteryFill").style.width=`${g.battery}%`;
   $("batteryFill").style.background=g.battery<20?"#ef4444":g.battery<40?"#f59e0b":"#22c55e";
 },ranking(){const ts=(this.state.teams||[]).map(t=>{const c=t.players.reduce((s,p)=>s+(p.cuts||0),0),b=t.players.reduce((s,p)=>s+(p.booms||0),0);return{name:t.name,n:t.players.length,c,b,score:c-b*t.players.length}}).sort((a,b)=>b.score-a.score);$("teamRanking").innerHTML=ts.map((t,i)=>{const team=this.state.teams.find(x=>x.name===t.name),m=this.teamMeta(team?.id);return `<div class="rank-row"><div><strong>#${i+1} ${m.emoji} ${UI.esc(m.name)}</strong><small>${t.n} fő • ${t.c} vágás • ${t.b} robbanás</small></div><b>${t.score}</b></div>`}).join("");const ps=this.state.teams.flatMap(t=>t.players.map(p=>({...p,team:t.name}))).sort((a,b)=>(b.cuts||0)-(a.cuts||0));$("playerRanking").innerHTML=ps.map((p,i)=>`<div class="rank-row"><div><strong>#${i+1} ${UI.esc(p.name)}</strong><small>${UI.esc(p.team)} • ${p.booms||0} robbanás</small></div><b>${p.cuts||0}</b></div>`).join("")},words(){
-  $("wordCount").textContent=`${WORDS.length} szó betöltve.`;
-  $("wordTableBody").innerHTML=WORDS.map((w,i)=>`<tr><td>${i+1}</td><td>${UI.esc(w.word)}</td><td><div class="taboo-list">${(Array.isArray(w.taboo)?w.taboo:[]).map(t=>`<span>${UI.esc(t)}</span>`).join("")}</div></td></tr>`).join("");
+  $("wordCount").textContent=`${WORDS.length} valódi, egyedileg megadott szó betöltve.`;
+  $("wordTableBody").innerHTML=WORDS.map((w,i)=>`<tr><td>${i+1}</td><td><strong>${UI.esc(w.word)}</strong><small>${UI.esc(w.category||"")}</small></td><td><div class="taboo-list">${(Array.isArray(w.taboo)?w.taboo:[]).map(t=>`<span>${UI.esc(t)}</span>`).join("")}</div></td></tr>`).join("");
 },export(){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(WORDS,null,2)],{type:"application/json"}));a.download="words.json";a.click()},async import(e){try{const x=JSON.parse(await e.target.files[0].text());if(!Array.isArray(x))throw 0;window.WORDS=x;this.used=[];this.pick();this.render();this.toast("Importálva.")}catch{this.toast("Hibás JSON.")}}};window.addEventListener("DOMContentLoaded",()=>APP.init());

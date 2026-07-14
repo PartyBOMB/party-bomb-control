@@ -36,3 +36,5 @@ button:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:560px){
   .settings-grid{grid-template-columns:1fr}
 }
+
+.word-table td:nth-child(2) small{display:block;margin-top:4px;color:#e7b36a;font-weight:400}

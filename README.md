@@ -1,4 +1,4 @@
-# Party Bomb Online v15.2.4
+# Party Bomb Online v15.2.5
 
 Firebase, lobby, partikód és többtelefonos kapcsolat nélkül.
 
@@ -20,7 +20,7 @@ Firebase, lobby, partikód és többtelefonos kapcsolat nélkül.
 Demó: Indítás → Élő játék → az aktív LED színével azonos vezetékre kattints.
 
 
-## v15.2.4 változások
+## v15.2.5 változások
 
 - Legfeljebb 4 fix színű csapat lehet:
   - 🔴 Piros csapat
@@ -35,7 +35,7 @@ Demó: Indítás → Élő játék → az aktív LED színével azonos vezetékr
 - A ranglista színes csapat-emojikkal jelenik meg.
 
 
-## v15.2.4 javítások
+## v15.2.5 javítások
 
 - Demó mód külön BE/KI gombot kapott.
 - A Bontás gomb a felső sávban és a Vezérlés fülön is működik.
@@ -50,7 +50,7 @@ Demó: Indítás → Élő játék → az aktív LED színével azonos vezetékr
 - Hangok jó vágásnál, rossz vágásnál, hatástalanításnál és robbanásnál működnek.
 
 
-## v15.2.4 – automatikus csapatváltás
+## v15.2.5 – automatikus csapatváltás
 
 Ha az Activity **ON**, akkor hatástalanítás vagy robbanás után:
 
@@ -66,7 +66,7 @@ A manuális **Csapatváltás** gomb továbbra is megmaradt.
 Activity **OFF** esetén nincs automatikus csapatváltás; a normál bomba mód és a manuális gomb használható.
 
 
-## v15.2.4 kritikus javítás
+## v15.2.5 kritikus javítás
 
 A hiba oka az volt, hogy az alkalmazás egy nem létező `liveStart` gombhoz próbált eseményt rendelni. Emiatt a JavaScript indulás közben leállt, így egyszerre nem működött a csapatfelvétel, a játékosfelvétel és a szólista.
 
@@ -79,3 +79,21 @@ Javítva:
 - egy hiányzó opcionális gomb többé nem állíthatja le az egész alkalmazást;
 - az utolsó csapat és az utolsó játékos is törölhető;
 - a service worker új gyorsítótár-verziót használ.
+
+
+## v15.2.5 – funkcionális és szóadatbázis-javítás
+
+- A korábbi mesterséges tabu szavakat teljesen eltávolítottuk.
+- 228 szó maradt, mindegyikhez öt, a szóhoz valóban kapcsolódó tabu szó tartozik.
+- A szólista kategóriát is mutat.
+- A csapatok fül új telepítésnél valóban üresen indul.
+- A helyi mentés kulcsa megváltozott, ezért a korábbi csapatok nem töltődnek vissza.
+- A `➕ Játékos` gomb működik, és legfeljebb négy játékost enged csapatonként.
+- Activity OFF esetén csapat és játékos nélkül is elindítható a normál bomba.
+- Activity OFF esetén az Élő játék fül elrejti:
+  - a feladványadót;
+  - a találgatót;
+  - a feladatot;
+  - a szót;
+  - a tabu szavakat.
+- Activity ON esetén a csapat- és játékoslogika változatlanul működik.

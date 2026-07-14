@@ -17,8 +17,8 @@ window.Game={
   start(app){
     this.cancelTimers();
 
-    if(!app.team() || app.team().players.length<2){
-      return app.toast("A kezdő csapatban legalább 2 játékos kell.");
+    if(app.state.settings.activity && (!app.team() || app.team().players.length<2)){
+      return app.toast("Activity ON módban a kezdő csapatban legalább 2 játékos kell.");
     }
 
     const settings=app.state.settings;
@@ -80,8 +80,10 @@ window.Game={
 
     if(index===game.led){
       game.good++;
-      const giver=app.giver();
-      if(giver)giver.cuts=(giver.cuts||0)+1;
+      if(app.state.settings.activity){
+        const giver=app.giver();
+        if(giver)giver.cuts=(giver.cuts||0)+1;
+      }
       Sound.good();
       app.log(`Jó vágás: ${index+1}. vezeték.`);
 
@@ -90,8 +92,10 @@ window.Game={
         return;
       }
 
-      game.giver=(game.giver+1)%app.team().players.length;
-      app.activity();
+      if(app.state.settings.activity){
+        game.giver=(game.giver+1)%app.team().players.length;
+        app.activity();
+      }
     }else{
       game.bad++;
       game.life--;
@@ -115,17 +119,19 @@ window.Game={
     clearTimeout(this.transitionTimer);
 
     const game=app.state.game;
-    const finishedTeam=app.team();
+    const finishedTeam=app.state.settings.activity?app.team():null;
 
     game.status=result;
     game.led=-1;
 
     if(result==="BOOM"){
-      const giver=app.giver();
-      if(giver)giver.booms=(giver.booms||0)+1;
-      app.log(`${finishedTeam?.name||"Csapat"} felrobbant.`);
+      if(app.state.settings.activity){
+        const giver=app.giver();
+        if(giver)giver.booms=(giver.booms||0)+1;
+      }
+      app.log(app.state.settings.activity?`${finishedTeam?.name||"Csapat"} felrobbant.`:"A bomba felrobbant.");
     }else{
-      app.log(`${finishedTeam?.name||"Csapat"} hatástalanította a bombát.`);
+      app.log(app.state.settings.activity?`${finishedTeam?.name||"Csapat"} hatástalanította a bombát.`:"A bomba hatástalanítva.");
     }
 
     app.fx(result);
