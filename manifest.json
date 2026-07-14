@@ -1,0 +1,9 @@
+{
+  "name": "Party Bomb Online",
+  "short_name": "Party Bomb",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#190400",
+  "theme_color": "#190400",
+  "icons": []
+}

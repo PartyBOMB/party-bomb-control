@@ -1,0 +1,1 @@
+window.Store={load(){try{return JSON.parse(localStorage.getItem(CONFIG.storageKey)||"null")}catch{return null}},save(v){localStorage.setItem(CONFIG.storageKey,JSON.stringify(v))}};

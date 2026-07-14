@@ -1,0 +1,1 @@
+window.CONFIG={version:"15.2.1",storageKey:"party-bomb-control",colors:["white","red","green","blue","yellow"],maxPlayers:4,defaults:{time:180,life:2,cuts:3,ledSpeed:3,activity:true,brightness:1},teams:[{id:"red",name:"Piros csapat",players:[{id:"r1",name:"Tomi"},{id:"r2",name:"Pati"}]},{id:"blue",name:"Kék csapat",players:[{id:"b1",name:"Noi"},{id:"b2",name:"Csaba"}]}]};
