@@ -8,8 +8,23 @@
 <section id="teams" class="page"><div class="glass panel"><div class="section-head"><div><h2>👥 Csapatok és játékosok</h2><p>Maximum 4 fő/csapat, sorrend: A → B → C → D → A.</p></div><button id="addTeam">➕ Csapat</button></div><div id="teamEditor"></div></div></section>
 <section id="live" class="page"><div class="glass arena"><div class="live-head"><span id="gameStatus" class="pill">⏸️ Készenlét</span><span id="liveTeam" class="pill">🏁 —</span></div><div id="timer" class="timer">03:00</div>
 <div id="rolePanel" class="role-grid"><div><small>🎭 Feladványt ad</small><strong id="giverName">—</strong></div><div><small>🧠 Találgat</small><strong id="guesserName">—</strong></div></div>
-<div id="activityPanel" class="activity-grid"><div><small>Feladat</small><strong id="taskType">DRAW</strong></div><div><small>Szó</small><strong id="currentWord">KUTYA</strong></div></div><div id="tabooBox" class="taboo hidden"><h3>🚫 Tabu</h3><div id="tabooWords"></div></div>
-<div class="bomb-grid"><div><h3>💡 LED-ek</h3><div id="leds" class="leds"></div></div><div><h3>✂️ Vezetékek</h3><div id="wires" class="wires"></div></div></div>
+<div id="activityPanel" class="activity-grid">
+  <div><small>Feladat</small><strong id="taskType">DRAW</strong></div>
+  <div class="secret-summary"><small>Feladvány</small><strong id="secretStatus">Rejtve</strong></div>
+</div>
+<div id="secretRevealPanel" class="secret-reveal hidden" aria-live="polite">
+  <div class="secret-word"><small>Szó</small><strong id="currentWord">KUTYA</strong></div>
+  <div id="tabooBox" class="taboo hidden"><h3>🚫 Tabu szavak</h3><div id="tabooWords"></div></div>
+</div>
+<div class="bomb-grid three-column">
+  <div><h3>💡 LED-ek</h3><div id="leds" class="leds"></div></div>
+  <div id="revealControl" class="reveal-control">
+    <button id="holdRevealButton" class="hold-reveal" type="button">
+      <span class="eye-icon">👁️</span><strong>Tartsd nyomva</strong><small>Szó és tabu megtekintése</small>
+    </button>
+  </div>
+  <div><h3>✂️ Vezetékek</h3><div id="wires" class="wires"></div></div>
+</div>
 <div class="counter-grid"><div><small>✅ Jó</small><strong id="goodCuts">0</strong></div><div><small>❌ Rossz</small><strong id="badCuts">0</strong></div><div><small>❤️ Élet</small><strong id="lifeCount">2</strong></div></div>
 <div class="actions center-actions"><button id="liveStart" class="success">▶️ Játék indítása</button><button id="goodMinus">➖ Jó</button><button id="goodPlus">➕ Jó</button><button id="badMinus">➖ Rossz</button><button id="badPlus">➕ Rossz</button><button id="nextTeam" class="primary">⏭️ Csapatváltás</button><button id="forceWin" class="success">✅ Hatástalanítás</button><button id="forceBoom" class="danger">💥 Robbanás</button></div></div></section>
 <section id="ranking" class="page"><div class="glass panel"><h2>🏆 Csapatranglista</h2><div id="teamRanking"></div></div><div class="glass panel"><h2>🥇 Játékosranglista</h2><div id="playerRanking"></div></div></section>

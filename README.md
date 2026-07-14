@@ -1,4 +1,4 @@
-# Party Bomb Online v15.2.5
+# Party Bomb Online v15.2.6
 
 Firebase, lobby, partikód és többtelefonos kapcsolat nélkül.
 
@@ -20,7 +20,7 @@ Firebase, lobby, partikód és többtelefonos kapcsolat nélkül.
 Demó: Indítás → Élő játék → az aktív LED színével azonos vezetékre kattints.
 
 
-## v15.2.5 változások
+## v15.2.6 változások
 
 - Legfeljebb 4 fix színű csapat lehet:
   - 🔴 Piros csapat
@@ -35,7 +35,7 @@ Demó: Indítás → Élő játék → az aktív LED színével azonos vezetékr
 - A ranglista színes csapat-emojikkal jelenik meg.
 
 
-## v15.2.5 javítások
+## v15.2.6 javítások
 
 - Demó mód külön BE/KI gombot kapott.
 - A Bontás gomb a felső sávban és a Vezérlés fülön is működik.
@@ -50,7 +50,7 @@ Demó: Indítás → Élő játék → az aktív LED színével azonos vezetékr
 - Hangok jó vágásnál, rossz vágásnál, hatástalanításnál és robbanásnál működnek.
 
 
-## v15.2.5 – automatikus csapatváltás
+## v15.2.6 – automatikus csapatváltás
 
 Ha az Activity **ON**, akkor hatástalanítás vagy robbanás után:
 
@@ -66,7 +66,7 @@ A manuális **Csapatváltás** gomb továbbra is megmaradt.
 Activity **OFF** esetén nincs automatikus csapatváltás; a normál bomba mód és a manuális gomb használható.
 
 
-## v15.2.5 kritikus javítás
+## v15.2.6 kritikus javítás
 
 A hiba oka az volt, hogy az alkalmazás egy nem létező `liveStart` gombhoz próbált eseményt rendelni. Emiatt a JavaScript indulás közben leállt, így egyszerre nem működött a csapatfelvétel, a játékosfelvétel és a szólista.
 
@@ -81,7 +81,7 @@ Javítva:
 - a service worker új gyorsítótár-verziót használ.
 
 
-## v15.2.5 – funkcionális és szóadatbázis-javítás
+## v15.2.6 – funkcionális és szóadatbázis-javítás
 
 - A korábbi mesterséges tabu szavakat teljesen eltávolítottuk.
 - 228 szó maradt, mindegyikhez öt, a szóhoz valóban kapcsolódó tabu szó tartozik.
@@ -97,3 +97,8 @@ Javítva:
   - a szót;
   - a tabu szavakat.
 - Activity ON esetén a csapat- és játékoslogika változatlanul működik.
+
+
+## v15.2.6 – titkos feladvány
+
+Activity ON esetén a szó és a tabu szavak alapból rejtve vannak. A LED-ek és a vezetékek között lévő nagy 👁️ gombot folyamatosan nyomva tartva jelennek meg. Felengedéskor azonnal eltűnnek. DESC esetén a szóval együtt a tabu szavak is láthatók. Activity OFF módban a szemgomb sem jelenik meg.
