@@ -1,4 +1,4 @@
-# Party Bomb Online v15.2.3
+# Party Bomb Online v15.2.4
 
 Firebase, lobby, partikód és többtelefonos kapcsolat nélkül.
 
@@ -20,7 +20,7 @@ Firebase, lobby, partikód és többtelefonos kapcsolat nélkül.
 Demó: Indítás → Élő játék → az aktív LED színével azonos vezetékre kattints.
 
 
-## v15.2.3 változások
+## v15.2.4 változások
 
 - Legfeljebb 4 fix színű csapat lehet:
   - 🔴 Piros csapat
@@ -35,7 +35,7 @@ Demó: Indítás → Élő játék → az aktív LED színével azonos vezetékr
 - A ranglista színes csapat-emojikkal jelenik meg.
 
 
-## v15.2.3 javítások
+## v15.2.4 javítások
 
 - Demó mód külön BE/KI gombot kapott.
 - A Bontás gomb a felső sávban és a Vezérlés fülön is működik.
@@ -50,7 +50,7 @@ Demó: Indítás → Élő játék → az aktív LED színével azonos vezetékr
 - Hangok jó vágásnál, rossz vágásnál, hatástalanításnál és robbanásnál működnek.
 
 
-## v15.2.3 – automatikus csapatváltás
+## v15.2.4 – automatikus csapatváltás
 
 Ha az Activity **ON**, akkor hatástalanítás vagy robbanás után:
 
@@ -64,3 +64,18 @@ Ha az Activity **ON**, akkor hatástalanítás vagy robbanás után:
 A manuális **Csapatváltás** gomb továbbra is megmaradt.
 
 Activity **OFF** esetén nincs automatikus csapatváltás; a normál bomba mód és a manuális gomb használható.
+
+
+## v15.2.4 kritikus javítás
+
+A hiba oka az volt, hogy az alkalmazás egy nem létező `liveStart` gombhoz próbált eseményt rendelni. Emiatt a JavaScript indulás közben leállt, így egyszerre nem működött a csapatfelvétel, a játékosfelvétel és a szólista.
+
+Javítva:
+
+- az Élő játék fülön látható a **Játék indítása** gomb;
+- a csapatok és játékosok újra felvehetők;
+- a 287 szavas lista megjelenik a tabu szavakkal;
+- a fejléc neve **Party BOMB**;
+- egy hiányzó opcionális gomb többé nem állíthatja le az egész alkalmazást;
+- az utolsó csapat és az utolsó játékos is törölhető;
+- a service worker új gyorsítótár-verziót használ.
