@@ -1,4 +1,4 @@
-# Party Bomb Online v15.2.7
+# Party Bomb Online v15.2.8
 
 Firebase, lobby, partikód és többtelefonos kapcsolat nélkül.
 
@@ -20,7 +20,7 @@ Firebase, lobby, partikód és többtelefonos kapcsolat nélkül.
 Demó: Indítás → Élő játék → az aktív LED színével azonos vezetékre kattints.
 
 
-## v15.2.7 változások
+## v15.2.8 változások
 
 - Legfeljebb 4 fix színű csapat lehet:
   - 🔴 Piros csapat
@@ -35,7 +35,7 @@ Demó: Indítás → Élő játék → az aktív LED színével azonos vezetékr
 - A ranglista színes csapat-emojikkal jelenik meg.
 
 
-## v15.2.7 javítások
+## v15.2.8 javítások
 
 - Demó mód külön BE/KI gombot kapott.
 - A Bontás gomb a felső sávban és a Vezérlés fülön is működik.
@@ -50,7 +50,7 @@ Demó: Indítás → Élő játék → az aktív LED színével azonos vezetékr
 - Hangok jó vágásnál, rossz vágásnál, hatástalanításnál és robbanásnál működnek.
 
 
-## v15.2.7 – automatikus csapatváltás
+## v15.2.8 – automatikus csapatváltás
 
 Ha az Activity **ON**, akkor hatástalanítás vagy robbanás után:
 
@@ -66,7 +66,7 @@ A manuális **Csapatváltás** gomb továbbra is megmaradt.
 Activity **OFF** esetén nincs automatikus csapatváltás; a normál bomba mód és a manuális gomb használható.
 
 
-## v15.2.7 kritikus javítás
+## v15.2.8 kritikus javítás
 
 A hiba oka az volt, hogy az alkalmazás egy nem létező `liveStart` gombhoz próbált eseményt rendelni. Emiatt a JavaScript indulás közben leállt, így egyszerre nem működött a csapatfelvétel, a játékosfelvétel és a szólista.
 
@@ -81,7 +81,7 @@ Javítva:
 - a service worker új gyorsítótár-verziót használ.
 
 
-## v15.2.7 – funkcionális és szóadatbázis-javítás
+## v15.2.8 – funkcionális és szóadatbázis-javítás
 
 - A korábbi mesterséges tabu szavakat teljesen eltávolítottuk.
 - 228 szó maradt, mindegyikhez öt, a szóhoz valóban kapcsolódó tabu szó tartozik.
@@ -99,12 +99,12 @@ Javítva:
 - Activity ON esetén a csapat- és játékoslogika változatlanul működik.
 
 
-## v15.2.7 – titkos feladvány
+## v15.2.8 – titkos feladvány
 
 Activity ON esetén a szó és a tabu szavak alapból rejtve vannak. A LED-ek és a vezetékek között lévő nagy 👁️ gombot folyamatosan nyomva tartva jelennek meg. Felengedéskor azonnal eltűnnek. DESC esetén a szóval együtt a tabu szavak is láthatók. Activity OFF módban a szemgomb sem jelenik meg.
 
 
-## v15.2.7
+## v15.2.8
 
 Arduino-kompatibilis határok:
 
@@ -115,3 +115,16 @@ Arduino-kompatibilis határok:
 - Fényerő: 0–7
 
 A szemgomb a Feladvány mező mellé került. A szómező Activity ON esetén mindig azonos méretben látszik, alapból teljesen homályos. Csak a szemgomb nyomva tartása alatt válik olvashatóvá. Tabu szavak csak körülírásnál jelennek meg.
+
+
+## v15.2.8
+
+A feladványmező ismét sárga, világító keretet kapott, és fix méretű marad. A szó nagy, fénylő betűkkel jelenik meg, a „Szó” felirat pedig kicsi és visszafogott. Körülírásnál a tabu szavak nagy, jól olvasható, fénylő címkéken jelennek meg.
+
+Az Arduino LIFE/CUTC balansza bekerült:
+
+- mindig teljesül: `CUTC + LIFE - 1 <= 5`;
+- LIFE módosításakor a CUTC lehetőleg 3 marad;
+- túl sok élet esetén a CUTC automatikusan csökken;
+- CUTC módosításakor szükség esetén a LIFE automatikusan csökken;
+- Activity ON esetén a CUTC legalább az aktuális csapat játékosainak száma, 2–4 között.

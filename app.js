@@ -28,10 +28,65 @@ this.state.settings={
   activity:this.state.settings?.activity!==false,
   brightness:this.clampInt(this.state.settings?.brightness,0,7,1)
 };
+this.applyActivityBalance(this.state.settings);
+if((this.state.settings.cuts+this.state.settings.life-1)>5){
+  this.state.settings.life=Math.max(1,6-this.state.settings.cuts);
+}
 this.bind();$("versionText").textContent=`v${CONFIG.version}`;this.render();if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js")},defaults(){return{settings:{...CONFIG.defaults},teams:[],currentTeam:null,game:{status:"READY",time:180,life:2,target:3,good:0,bad:0,led:-1,wires:"00000",giver:0,task:"DRAW",word:0,battery:82,volt:4.05},logs:[]}},bind(){document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab,.page").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.page).classList.add("active")});$("usbConnect").onclick=()=>Hardware.usb(this).catch(e=>this.toast(e.message));
 on("demoToggle","click",()=>this.toggleDemo());
 on("disconnectControl","click",()=>Hardware.close(this));
-on("liveStart","click",()=>this.ensurePlayable(()=>Game.start(this)));this.bindSecretReveal();$("bleConnect").onclick=()=>Hardware.ble(this).catch(e=>this.toast(e.message));$("disconnect").onclick=()=>Hardware.close(this);$("saveSettings").onclick=()=>this.settings();$("sendSettings").onclick=()=>this.sendSettings();$("readSettings").onclick=()=>Hardware.send("GET").catch(e=>this.toast(e.message));$("startGame").onclick=()=>this.ensurePlayable(()=>Game.start(this));$("resetGame").onclick=()=>{this.reset();this.render()};$("rfTest").onclick=()=>Hardware.send("RFTEST");$("refreshBattery").onclick=()=>this.battery();$("addTeam").onclick=()=>this.addTeam();$("nextTeam").onclick=()=>Game.next(this);$("forceWin").onclick=()=>Game.finish(this,"WIN");$("forceBoom").onclick=()=>Game.finish(this,"BOOM");$("goodPlus").onclick=()=>this.adjust("good",1);$("goodMinus").onclick=()=>this.adjust("good",-1);$("badPlus").onclick=()=>this.adjust("bad",1);$("badMinus").onclick=()=>this.adjust("bad",-1);$("newWord").onclick=()=>{this.pick();this.words()};$("exportWords").onclick=()=>this.export();$("importWords").onchange=e=>this.import(e)},bindSecretReveal(){
+on("liveStart","click",()=>this.ensurePlayable(()=>Game.start(this)));this.bindSecretReveal();
+this.bindLifeCutBalance();$("bleConnect").onclick=()=>Hardware.ble(this).catch(e=>this.toast(e.message));$("disconnect").onclick=()=>Hardware.close(this);$("saveSettings").onclick=()=>this.settings();$("sendSettings").onclick=()=>this.sendSettings();$("readSettings").onclick=()=>Hardware.send("GET").catch(e=>this.toast(e.message));$("startGame").onclick=()=>this.ensurePlayable(()=>Game.start(this));$("resetGame").onclick=()=>{this.reset();this.render()};$("rfTest").onclick=()=>Hardware.send("RFTEST");$("refreshBattery").onclick=()=>this.battery();$("addTeam").onclick=()=>this.addTeam();$("nextTeam").onclick=()=>Game.next(this);$("forceWin").onclick=()=>Game.finish(this,"WIN");$("forceBoom").onclick=()=>Game.finish(this,"BOOM");$("goodPlus").onclick=()=>this.adjust("good",1);$("goodMinus").onclick=()=>this.adjust("good",-1);$("badPlus").onclick=()=>this.adjust("bad",1);$("badMinus").onclick=()=>this.adjust("bad",-1);$("newWord").onclick=()=>{this.pick();this.words()};$("exportWords").onclick=()=>this.export();$("importWords").onchange=e=>this.import(e)},currentPlayerCountForBalance(){
+  if(!this.state?.settings?.activity)return 0;
+  const team=this.team();
+  return Math.min(4,Math.max(2,team?.players?.length||2));
+},
+applyActivityBalance(settings){
+  if(!settings.activity)return settings;
+  const playerCount=this.currentPlayerCountForBalance();
+  settings.cuts=Math.max(settings.cuts,playerCount);
+  settings.cuts=Math.min(5,settings.cuts);
+  settings.life=Math.min(settings.life,6-settings.cuts);
+  settings.life=Math.max(1,settings.life);
+  return settings;
+},
+balanceFromLife(){
+  const life=this.clampInt($("setLife").value,1,5,2);
+  let cuts=Math.min(3,6-life);
+  cuts=Math.max(1,cuts);
+  const settings={
+    ...this.state.settings,
+    life,
+    cuts,
+    activity:$("setActivity").value==="1"
+  };
+  this.applyActivityBalance(settings);
+  $("setLife").value=settings.life;
+  $("setCuts").value=settings.cuts;
+},
+balanceFromCuts(){
+  const cuts=this.clampInt($("setCuts").value,1,5,3);
+  let life=this.clampInt($("setLife").value,1,5,2);
+  life=Math.min(life,6-cuts);
+  life=Math.max(1,life);
+  const settings={
+    ...this.state.settings,
+    life,
+    cuts,
+    activity:$("setActivity").value==="1"
+  };
+  this.applyActivityBalance(settings);
+  $("setLife").value=settings.life;
+  $("setCuts").value=settings.cuts;
+},
+bindLifeCutBalance(){
+  $("setLife")?.addEventListener("change",()=>this.balanceFromLife());
+  $("setCuts")?.addEventListener("change",()=>this.balanceFromCuts());
+  $("setActivity")?.addEventListener("change",()=>{
+    if($("setActivity").value==="1")this.balanceFromCuts();
+  });
+},
+bindSecretReveal(){
   const button=$("holdRevealButton");
   if(!button)return;
   const show=e=>{e?.preventDefault();if(!this.state.settings.activity)return;this.secretVisible=true;this.renderSecret()};
@@ -110,7 +165,13 @@ guesser(){const team=this.team();return team?.players?.length?team.players[(this
     activity:$("setActivity").value==="1",
     brightness:this.clampInt($("setBrightness").value,0,7,1)
   };
+  this.applyActivityBalance(this.state.settings);
+  if((this.state.settings.cuts+this.state.settings.life-1)>5){
+    this.state.settings.life=Math.max(1,6-this.state.settings.cuts);
+  }
   if(!this.state.settings.activity)this.secretVisible=false;
+  $("setLife").value=this.state.settings.life;
+  $("setCuts").value=this.state.settings.cuts;
   this.save();
   this.render();
   this.toast("Mentve.");

@@ -52,3 +52,87 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .secret-word strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #tabooBox{margin-top:8px;max-height:74px;overflow:hidden}
 @media(max-width:560px){.eye-hold-button{width:54px;height:54px;flex-basis:54px}.secret-reveal{height:170px;min-height:170px}}
+
+/* v15.2.8 – világító, fix feladványmező */
+.secret-reveal{
+  height:250px;
+  min-height:250px;
+  border:2px solid #fbbf24;
+  border-radius:18px;
+  background:
+    radial-gradient(circle at center,rgba(245,158,11,.13),transparent 62%),
+    #230606f4;
+  box-shadow:
+    0 0 16px #f59e0b88,
+    inset 0 0 22px #f59e0b22;
+}
+.secret-content{
+  min-height:210px;
+  padding:12px 20px;
+}
+.secret-word small{
+  display:block;
+  margin-bottom:5px;
+  color:#ffe7a3;
+  font-size:.78rem;
+  font-weight:500;
+  letter-spacing:.05em;
+  opacity:.88;
+}
+.secret-word strong{
+  display:block;
+  margin:0;
+  font-size:clamp(3rem,7vw,5.8rem);
+  line-height:1.05;
+  color:#fff7c7;
+  text-shadow:
+    0 0 8px #fff2a8,
+    0 0 18px #f59e0b,
+    0 0 34px #f59e0b;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#tabooBox{
+  margin:16px 0 0;
+  padding:12px 14px;
+  max-height:none;
+  overflow:visible;
+  background:rgba(127,29,29,.68);
+  border:1px solid #ef444477;
+  border-radius:14px;
+}
+#tabooBox h3{
+  margin:0 0 10px;
+  color:#ffd7d7;
+  font-size:.95rem;
+  font-weight:650;
+}
+#tabooWords{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:9px;
+}
+#tabooWords span{
+  display:inline-block;
+  padding:7px 12px;
+  border-radius:999px;
+  background:#7f1d1d;
+  border:1px solid #f8717188;
+  color:#fff4f4;
+  font-size:clamp(1rem,2vw,1.35rem);
+  font-weight:800;
+  text-shadow:0 0 9px #ef4444;
+  box-shadow:0 0 11px #ef444444;
+}
+.secret-content.blurred{
+  filter:blur(25px);
+  opacity:.16;
+}
+@media(max-width:600px){
+  .secret-reveal{height:235px;min-height:235px}
+  .secret-content{min-height:195px;padding:10px 12px}
+  .secret-word strong{font-size:clamp(2.5rem,12vw,4.5rem)}
+  #tabooWords span{font-size:1rem;padding:6px 9px}
+}
