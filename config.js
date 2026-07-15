@@ -1,1 +1,1 @@
-window.CONFIG={version:"15.2.6",storageKey:"party-bomb-control-v15-2-5",colors:["white","red","green","blue","yellow"],maxPlayers:4,defaults:{time:180,life:2,cuts:3,ledSpeed:3,activity:true,brightness:1},teams:[]};
+window.CONFIG={version:"15.2.7",storageKey:"party-bomb-control-v15-2-5",colors:["white","red","green","blue","yellow"],maxPlayers:4,defaults:{time:180,life:2,cuts:3,ledSpeed:3,activity:true,brightness:1},teams:[]};

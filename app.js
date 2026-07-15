@@ -3,7 +3,14 @@ const on=(id,event,handler)=>{
   const element=$(id);
   if(element)element.addEventListener(event,handler);
 };
-const APP={state:null,word:WORDS[0],used:[],secretVisible:false,init(){
+const APP={
+state:null,word:WORDS[0],used:[],secretVisible:false,
+clampInt(value,min,max,fallback){
+  const number=Math.round(Number(value));
+  if(!Number.isFinite(number))return fallback;
+  return Math.min(max,Math.max(min,number));
+},
+init(){
 this.state=Store.load()||this.defaults();
 if(!Array.isArray(this.state.teams))this.state.teams=[];
 this.state.teams=this.state.teams.slice(0,4).map(t=>{
@@ -13,6 +20,14 @@ this.state.teams=this.state.teams.slice(0,4).map(t=>{
 if(this.state.currentTeam && !this.state.teams.some(t=>t.id===this.state.currentTeam)){
   this.state.currentTeam=this.state.teams[0]?.id||null;
 }
+this.state.settings={
+  time:this.clampInt(this.state.settings?.time,60,5999,180),
+  life:this.clampInt(this.state.settings?.life,1,5,2),
+  cuts:this.clampInt(this.state.settings?.cuts,1,5,3),
+  ledSpeed:this.clampInt(this.state.settings?.ledSpeed,1,5,3),
+  activity:this.state.settings?.activity!==false,
+  brightness:this.clampInt(this.state.settings?.brightness,0,7,1)
+};
 this.bind();$("versionText").textContent=`v${CONFIG.version}`;this.render();if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js")},defaults(){return{settings:{...CONFIG.defaults},teams:[],currentTeam:null,game:{status:"READY",time:180,life:2,target:3,good:0,bad:0,led:-1,wires:"00000",giver:0,task:"DRAW",word:0,battery:82,volt:4.05},logs:[]}},bind(){document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab,.page").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.page).classList.add("active")});$("usbConnect").onclick=()=>Hardware.usb(this).catch(e=>this.toast(e.message));
 on("demoToggle","click",()=>this.toggleDemo());
 on("disconnectControl","click",()=>Hardware.close(this));
@@ -33,18 +48,26 @@ on("liveStart","click",()=>this.ensurePlayable(()=>Game.start(this)));this.bindS
 },
 renderSecret(){
   const activityOn=!!this.state?.settings?.activity;
-  $("revealControl")?.classList.toggle("hidden",!activityOn);
+  const panel=$("secretRevealPanel");
+  const content=$("secretContent");
+  const status=$("secretStatus");
+  const button=$("holdRevealButton");
+  const showTaboo=activityOn && this.state.game.task==="DESC";
+
   if(!activityOn){
     this.secretVisible=false;
-    $("secretRevealPanel")?.classList.add("hidden");
-    if($("secretStatus"))$("secretStatus").textContent="—";
-    $("holdRevealButton")?.classList.remove("revealing");
+    panel?.classList.add("hidden");
+    if(status)status.textContent="—";
+    button?.classList.remove("revealing");
     return;
   }
-  $("secretRevealPanel")?.classList.toggle("hidden",!this.secretVisible);
-  if($("secretStatus"))$("secretStatus").textContent=this.secretVisible?"Látható":"Rejtve";
-  $("holdRevealButton")?.classList.toggle("revealing",this.secretVisible);
-  $("tabooBox")?.classList.toggle("hidden",!(this.secretVisible&&this.state.game.task==="DESC"));
+
+  panel?.classList.remove("hidden");
+  content?.classList.toggle("blurred",!this.secretVisible);
+  content?.classList.toggle("revealed",this.secretVisible);
+  if(status)status.textContent=this.secretVisible?"Látható":"Rejtve";
+  button?.classList.toggle("revealing",this.secretVisible);
+  $("tabooBox")?.classList.toggle("hidden",!showTaboo);
 },
 save(){Store.save(this.state)},toast(t){UI.toast(t)},
 connection(t){$("connectionBadge").textContent=t;$("demoToggle").textContent=Hardware.mode==="demo"?"🧪 Demó: BE":"🧪 Demó: KI"},
@@ -78,7 +101,20 @@ teamMeta(id){
   return map[id]||{name:"Csapat",emoji:"⚪",className:"team-neutral"};
 },
 giver(){const team=this.team();return team?.players?.length?team.players[this.state.game.giver%team.players.length]:null},
-guesser(){const team=this.team();return team?.players?.length?team.players[(this.state.game.giver+1)%team.players.length]:null},pick(){this.secretVisible=false;let a=WORDS.map((_,i)=>i).filter(i=>!this.used.includes(i));if(!a.length){this.used=[];a=WORDS.map((_,i)=>i)}const i=a[Math.floor(Math.random()*a.length)];this.used.push(i);this.state.game.word=i;this.word=WORDS[i]},activity(){this.secretVisible=false;if(!this.state.settings.activity){this.state.game.task="OFF";return}this.state.game.task=["DRAW","DESC","PANT"][Math.floor(Math.random()*3)];this.pick()},settings(){this.state.settings={time:+$("setTime").value,life:+$("setLife").value,cuts:+$("setCuts").value,ledSpeed:+$("setLedSpeed").value,activity:$("setActivity").value==="1",brightness:+$("setBrightness").value};if(!this.state.settings.activity)this.secretVisible=false;this.save();this.render();this.toast("Mentve.")},async sendSettings(){this.settings();for(const[k,v]of Object.entries({TIME:this.state.settings.time,LIFE:this.state.settings.life,CUTC:this.state.settings.cuts,LEDT:this.state.settings.ledSpeed,ACTV:this.state.settings.activity?1:0,BRGT:this.state.settings.brightness}))await Hardware.send(`SET ${k} ${v}`).catch(e=>this.toast(e.message))},reset(){Game.cancelTimers();this.state.game={status:"READY",time:+this.state.settings.time,life:+this.state.settings.life,target:+this.state.settings.cuts,good:0,bad:0,led:-1,wires:"00000",giver:0,task:"DRAW",word:0,battery:this.state.game.battery,volt:this.state.game.volt};this.activity();this.save()},battery(){
+guesser(){const team=this.team();return team?.players?.length?team.players[(this.state.game.giver+1)%team.players.length]:null},pick(){this.secretVisible=false;let a=WORDS.map((_,i)=>i).filter(i=>!this.used.includes(i));if(!a.length){this.used=[];a=WORDS.map((_,i)=>i)}const i=a[Math.floor(Math.random()*a.length)];this.used.push(i);this.state.game.word=i;this.word=WORDS[i]},activity(){this.secretVisible=false;if(!this.state.settings.activity){this.state.game.task="OFF";return}this.state.game.task=["DRAW","DESC","PANT"][Math.floor(Math.random()*3)];this.pick()},settings(){
+  this.state.settings={
+    time:this.clampInt($("setTime").value,60,5999,180),
+    life:this.clampInt($("setLife").value,1,5,2),
+    cuts:this.clampInt($("setCuts").value,1,5,3),
+    ledSpeed:this.clampInt($("setLedSpeed").value,1,5,3),
+    activity:$("setActivity").value==="1",
+    brightness:this.clampInt($("setBrightness").value,0,7,1)
+  };
+  if(!this.state.settings.activity)this.secretVisible=false;
+  this.save();
+  this.render();
+  this.toast("Mentve.");
+},async sendSettings(){this.settings();for(const[k,v]of Object.entries({TIME:this.state.settings.time,LIFE:this.state.settings.life,CUTC:this.state.settings.cuts,LEDT:this.state.settings.ledSpeed,ACTV:this.state.settings.activity?1:0,BRGT:this.state.settings.brightness}))await Hardware.send(`SET ${k} ${v}`).catch(e=>this.toast(e.message))},reset(){Game.cancelTimers();this.state.game={status:"READY",time:+this.state.settings.time,life:+this.state.settings.life,target:+this.state.settings.cuts,good:0,bad:0,led:-1,wires:"00000",giver:0,task:"DRAW",word:0,battery:this.state.game.battery,volt:this.state.game.volt};this.activity();this.save()},battery(){
   if(Hardware.mode==="demo"){
     const v=3.20+Math.random()*1.00;
     this.state.game.volt=v;

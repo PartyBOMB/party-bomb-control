@@ -2,7 +2,7 @@
 <div class="shade"></div><header class="glass topbar"><div><h1>💣 Party BOMB</h1><p id="versionText"></p></div><div class="actions"><span id="connectionBadge" class="pill">🧪 Demó</span><button id="usbConnect">🔌 USB</button><button id="bleConnect">📶 HM-10</button><button id="disconnect">⛔ Bontás</button></div></header>
 <nav class="glass nav"><button class="tab active" data-page="control">🎛️ Vezérlés</button><button class="tab" data-page="teams">👥 Csapatok</button><button class="tab" data-page="live">🎮 Élő játék</button><button class="tab" data-page="ranking">🏆 Ranglista</button><button class="tab" data-page="words">🎴 Szavak</button><button class="tab" data-page="log">📜 Napló</button></nav><main>
 <section id="control" class="page active"><div class="glass panel"><h2>⚙️ Beállítások</h2><div class="settings-grid">
-<label>⏱️ Idő<input id="setTime" type="number" value="180"></label><label>❤️ Életek<input id="setLife" type="number" value="2"></label><label>✂️ Vágások<input id="setCuts" type="number" value="3"></label><label>💡 LED-sebesség<input id="setLedSpeed" type="number" value="3"></label><label>🎭 Activity<select id="setActivity"><option value="1">ON</option><option value="0">OFF</option></select></label><label>🔆 Fényerő<input id="setBrightness" type="number" value="1"></label></div>
+<label>⏱️ Idő<input id="setTime" type="number" min="60" max="5999" step="1" value="180"></label><label>❤️ Életek<input id="setLife" type="number" min="1" max="5" step="1" value="2"></label><label>✂️ Vágások<input id="setCuts" type="number" min="1" max="5" step="1" value="3"></label><label>💡 LED-sebesség<input id="setLedSpeed" type="number" min="1" max="5" step="1" value="3"></label><label>🎭 Activity<select id="setActivity"><option value="1">ON</option><option value="0">OFF</option></select></label><label>🔆 Fényerő<input id="setBrightness" type="number" min="0" max="7" step="1" value="1"></label></div>
 <div class="actions connection-actions"><button id="demoToggle" class="secondary">🧪 Demó: BE</button><button id="disconnectControl">⛔ Bontás</button><button id="saveSettings" class="primary">💾 Mentés</button><button id="sendSettings">📤 Hardverre</button><button id="readSettings">📥 Lekérés</button><button id="startGame" class="success">▶️ Indítás</button><button id="resetGame">🔄 Reset</button><button id="rfTest">📡 RF-teszt</button></div></div>
 <div class="glass panel"><h2>🔋 Akkumulátor</h2><div class="battery-row"><div class="battery"><div id="batteryFill"></div></div><strong id="batteryPercent">82%</strong><span id="batteryVoltage">4.05 V</span><button id="refreshBattery">🔄 Frissítés</button></div></div></section>
 <section id="teams" class="page"><div class="glass panel"><div class="section-head"><div><h2>👥 Csapatok és játékosok</h2><p>Maximum 4 fő/csapat, sorrend: A → B → C → D → A.</p></div><button id="addTeam">➕ Csapat</button></div><div id="teamEditor"></div></div></section>
@@ -10,19 +10,20 @@
 <div id="rolePanel" class="role-grid"><div><small>🎭 Feladványt ad</small><strong id="giverName">—</strong></div><div><small>🧠 Találgat</small><strong id="guesserName">—</strong></div></div>
 <div id="activityPanel" class="activity-grid">
   <div><small>Feladat</small><strong id="taskType">DRAW</strong></div>
-  <div class="secret-summary"><small>Feladvány</small><strong id="secretStatus">Rejtve</strong></div>
+  <div class="secret-summary">
+    <div><small>Feladvány</small><strong id="secretStatus">Rejtve</strong></div>
+    <button id="holdRevealButton" class="eye-hold-button" type="button"
+      aria-label="Tartsd nyomva a szó és a tabu szavak megjelenítéséhez">👁️</button>
+  </div>
 </div>
 <div id="secretRevealPanel" class="secret-reveal hidden" aria-live="polite">
-  <div class="secret-word"><small>Szó</small><strong id="currentWord">KUTYA</strong></div>
-  <div id="tabooBox" class="taboo hidden"><h3>🚫 Tabu szavak</h3><div id="tabooWords"></div></div>
-</div>
-<div class="bomb-grid three-column">
-  <div><h3>💡 LED-ek</h3><div id="leds" class="leds"></div></div>
-  <div id="revealControl" class="reveal-control">
-    <button id="holdRevealButton" class="hold-reveal" type="button">
-      <span class="eye-icon">👁️</span><strong>Tartsd nyomva</strong><small>Szó és tabu megtekintése</small>
-    </button>
+  <div id="secretContent" class="secret-content blurred">
+    <div class="secret-word"><small>Szó</small><strong id="currentWord">KUTYA</strong></div>
+    <div id="tabooBox" class="taboo hidden"><h3>🚫 Tabu szavak</h3><div id="tabooWords"></div></div>
   </div>
+</div>
+<div class="bomb-grid">
+  <div><h3>💡 LED-ek</h3><div id="leds" class="leds"></div></div>
   <div><h3>✂️ Vezetékek</h3><div id="wires" class="wires"></div></div>
 </div>
 <div class="counter-grid"><div><small>✅ Jó</small><strong id="goodCuts">0</strong></div><div><small>❌ Rossz</small><strong id="badCuts">0</strong></div><div><small>❤️ Élet</small><strong id="lifeCount">2</strong></div></div>
